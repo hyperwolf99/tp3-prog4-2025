@@ -4,8 +4,8 @@ import {
     validarId,
     verificarValidaciones
 } from "./validaciones.js";
-import bcrypt from "bcrypt";
 import { verificarAutenticacion } from "./auth.js";
+import { body } from "express-validator";
 
 const router = express.Router();
 
@@ -32,32 +32,40 @@ router.get(
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
-        const [rows] = await db.execute(
-            "SELECT id, nombre, email FROM usuarios WHERE id = ?",
-            [id]
-        );
+
+        const [rows] = await db.execute("SELECT * FROM alumnos WHERE id = ?", [
+            id,
+        ]);
+
         if (rows.length === 0) {
             return res
                 .status(404)
-                .json({ success: false, message: "Usuario no encontrado" });
+                .json({ success: false, message: "Alumno no encontrado" });
         }
-        res.json({ success: true, data: rows[0] });
+
+        res.json({
+            success: true,
+            data: rows[0],
+        })
     }
 );
 
+// Crear nuevo alumno
 router.post(
     "/",
-    //verificarAutenticacion,
-    validarUsuario(),
+    [
+        body("nombre").isString().notEmpty().withMessage("El nombre es obligatorio"),
+        body("apellido").isString().notEmpty().withMessage("El apellido es obligatorio"),
+        body("dni").notEmpty().withMessage("El DNI es obligatorio"),
+    ],
+    verificarAutenticacion,
     verificarValidaciones,
     async (req, res) => {
-        const { nombre, email, password } = req.body;
-
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const { nombre, apellido, dni } = req.body;
 
         const [result] = await db.execute(
-            "INSERT INTO usuarios (nombre, email, password_hash) VALUES (?, ?, ?)",
-            [nombre, email, hashedPassword]
+            "INSERT INTO alumnos (nombre, apellido, dni) VALUES (?, ?, ?)",
+            [nombre, apellido, dni]
         );
 
         res.json({
@@ -65,45 +73,45 @@ router.post(
             data: {
                 id: result.insertId,
                 nombre,
-                email
+                apellido,
+                dni
             },
         });
     }
 );
 
+// Actualizar alumno
 router.put(
     "/:id",
     verificarAutenticacion,
     validarId(),
-    validarUsuario(),
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
-        const { nombre, email, password } = req.body;
+        const { nombre, apellido, dni } = req.body;
 
-        const [rows] = await db.execute("SELECT * FROM usuarios WHERE id = ?", [
+        const [rows] = await db.execute("SELECT * FROM alumnos WHERE id = ?", [
             id,
         ]);
         if (rows.length === 0) {
             return res
                 .status(404)
-                .json({ success: false, message: "Usuario no encontrado" });
+                .json({ success: false, message: "Alumno no encontrado" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         await db.execute(
-            "UPDATE usuarios SET nombre = ?, email = ?, password_hash = ? WHERE id = ?",
-            [nombre, email, hashedPassword, id]
+            "UPDATE alumnos SET nombre = ?, apellido = ?, dni = ? WHERE id = ?",
+            [nombre, apellido, dni, id]
         );
 
         res.json({
             success: true,
-            data: { id, nombre, email },
+            data: { id, nombre, apellido, dni },
         });
     }
 );
 
+// Eliminar alumno
 router.delete(
     "/:id",
     verificarAutenticacion,
@@ -112,18 +120,18 @@ router.delete(
     async (req, res) => {
         const id = Number(req.params.id);
 
-        const [rows] = await db.execute("SELECT * FROM usuarios WHERE id = ?", [
+        const [rows] = await db.execute("SELECT * FROM alumnos WHERE id = ?", [
             id,
         ]);
         if (rows.length === 0) {
             return res
                 .status(404)
-                .json({ success: false, message: "Usuario no encontrado" });
+                .json({ success: false, message: "Alumno no encontrado" });
         }
 
-        await db.execute("DELETE FROM usuarios WHERE id = ?", [id]);
+        await db.execute("DELETE FROM alumnos WHERE id = ?", [id]);
 
-        res.json({ success: true, message: "Usuario eliminado" });
+        res.json({ success: true, message: "Alumno eliminado" });
     }
 );
 

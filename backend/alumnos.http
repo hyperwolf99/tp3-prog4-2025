@@ -1,0 +1,46 @@
+### Login usuario
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "juan@hola.com",
+    "password": "Asdf1234"
+}
+
+### Set token
+@token = {{login.response.body.token}}
+
+### Crear nuevo alumno
+POST http://localhost:3000/alumnos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "dni": "12345678"
+}
+
+### Obtener todos los alumnos
+GET http://localhost:3000/alumnos
+Authorization: Bearer {{token}}
+
+### Obtener alumno por ID
+GET http://localhost:3000/alumnos/7
+Authorization: Bearer {{token}}
+
+### Actualizar alumno
+PUT http://localhost:3000/alumnos/7
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "dni": "87654321"
+}
+
+### Eliminar alumno
+DELETE http://localhost:3000/alumnos/7
+Authorization: Bearer {{token}}

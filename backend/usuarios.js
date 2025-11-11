@@ -10,6 +10,7 @@ import { verificarAutenticacion } from "./auth.js";
 
 const router = express.Router();
 
+// Obtener todos los usuarios
 router.get("/", verificarAutenticacion, async (req, res) => {
     const [rows] = await db.execute("SELECT id, nombre, email FROM usuarios");
 
@@ -46,6 +47,7 @@ router.get(
     }
 );
 
+// Crear nuevo usuario
 router.post(
     "/",
     //verificarAutenticacion,
@@ -72,6 +74,7 @@ router.post(
     }
 );
 
+// Actualizar usuario
 router.put(
     "/:id",
     verificarAutenticacion,
@@ -105,6 +108,7 @@ router.put(
     }
 );
 
+// Eliminar usuario
 router.delete(
     "/:id",
     verificarAutenticacion,

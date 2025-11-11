@@ -2,6 +2,7 @@ import express from "express";
 import { conectarDB } from "./db.js";
 import usuariosRouter from "./usuarios.js";
 import authRouter, { authConfig } from "./auth.js";
+import alumnosRouter from "./alumnos.js";
 import cors from "cors";
 
 conectarDB();
@@ -27,6 +28,7 @@ authConfig();
 // Usar el enrutador de usuarios
 app.use("/usuarios", usuariosRouter);
 app.use("/auth", authRouter);
+app.use("/alumnos", alumnosRouter);
 
 // Iniciar el servidor
 app.listen(port, () => {
