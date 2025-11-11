@@ -20,7 +20,7 @@ router.get("/", verificarAutenticacion, async (req, res) => {
             .json({ success: false, message: "No hay usuarios" });
     }
 
-    res.json({
+    res.status(200).json({
         success: true,
         data: rows
     });
@@ -63,7 +63,7 @@ router.post(
             [nombre, email, hashedPassword]
         );
 
-        res.json({
+        res.status(201).json({
             success: true,
             data: {
                 id: result.insertId,
@@ -101,7 +101,7 @@ router.put(
             [nombre, email, hashedPassword, id]
         );
 
-        res.json({
+        res.status(200).json({
             success: true,
             data: { id, nombre, email },
         });
@@ -128,7 +128,7 @@ router.delete(
 
         await db.execute("DELETE FROM usuarios WHERE id = ?", [id]);
 
-        res.json({ success: true, message: "Usuario eliminado" });
+        res.status(200).json({ success: true, message: "Usuario eliminado" });
     }
 );
 

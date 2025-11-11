@@ -9,6 +9,7 @@ import { body } from "express-validator";
 
 const router = express.Router();
 
+// Obtener todos los alumnos
 router.get("/", verificarAutenticacion, async (req, res) => {
     const [rows] = await db.execute("SELECT * FROM alumnos");
 
@@ -18,13 +19,13 @@ router.get("/", verificarAutenticacion, async (req, res) => {
             .json({ success: false, message: "No hay alumnos" });
     }
 
-    res.json({
+    res.status(200).json({
         success: true,
         data: rows
     });
 });
 
-// Obtener usuario por ID
+// Obtener alumno por ID
 router.get(
     "/:id",
     verificarAutenticacion,
@@ -68,7 +69,7 @@ router.post(
             [nombre, apellido, dni]
         );
 
-        res.json({
+        res.status(201).json({
             success: true,
             data: {
                 id: result.insertId,
@@ -104,7 +105,7 @@ router.put(
             [nombre, apellido, dni, id]
         );
 
-        res.json({
+        res.status(200).json({
             success: true,
             data: { id, nombre, apellido, dni },
         });
@@ -131,7 +132,7 @@ router.delete(
 
         await db.execute("DELETE FROM alumnos WHERE id = ?", [id]);
 
-        res.json({ success: true, message: "Alumno eliminado" });
+        res.status(200).json({ success: true, message: "Alumno eliminado" });
     }
 );
 
