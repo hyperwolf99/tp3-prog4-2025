@@ -1,0 +1,45 @@
+### Crear usuario - POST /usuarios
+POST http://localhost:3000/usuarios
+Content-Type: application/json
+
+{
+    "nombre": "Juan2",
+    "email": "juan2@hola.com",
+    "password": "Asdf1234"
+}
+
+### Login usuario
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "juan@hola.com",
+    "password": "Asdf1234"
+}
+
+### Set token
+@token = {{login.response.body.token}}
+
+### Listar usuarios - GET /usuarios
+GET http://localhost:3000/usuarios
+Authorization: Bearer {{token}}
+
+### Obtener usuario por ID - GET /usuarios/:id
+GET http://localhost:3000/usuarios/3
+Authorization: Bearer {{token}}
+
+### Actualizar usuario - PUT /usuarios/:id
+PUT http://localhost:3000/usuarios/3
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Juan Actualizado",
+    "email": "juan@hola.com",
+    "password": "Asdf1234"
+}
+
+### Eliminar usuario - DELETE /usuarios/:id
+DELETE http://localhost:3000/usuarios/6
+Authorization: Bearer {{token}}
