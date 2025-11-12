@@ -22,6 +22,28 @@ Authorization: Bearer {{token}}
     "dni": "12345678"
 }
 
+### Crear nuevo alumno
+POST http://localhost:3000/alumnos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Luis",
+    "apellido": "Martínez",
+    "dni": "23456789"
+}
+
+### Crear nuevo alumno
+POST http://localhost:3000/alumnos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Ana",
+    "apellido": "Gómez",
+    "dni": "87654321"
+}
+
 ### Obtener todos los alumnos
 GET http://localhost:3000/alumnos
 Authorization: Bearer {{token}}

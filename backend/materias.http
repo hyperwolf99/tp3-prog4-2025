@@ -1,0 +1,57 @@
+### Login usuario
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "juan@hola.com",
+    "password": "Asdf1234"
+}
+
+### Set token
+@token = {{login.response.body.token}}
+
+### Crear nueva materia
+POST http://localhost:3000/materias
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Matemáticas",
+    "codigo": "MAT101",
+    "año": 2023
+}
+
+### Crear nueva materia
+POST http://localhost:3000/materias
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Física",
+    "codigo": "FIS101",
+    "año": 2023
+}
+
+### Obtener todas las materias
+GET http://localhost:3000/materias
+Authorization: Bearer {{token}}
+
+### Obtener materia por ID
+GET http://localhost:3000/materias/5
+Authorization: Bearer {{token}}
+
+### Actualizar materia
+PUT http://localhost:3000/materias/5
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "nombre": "Matemáticas Avanzadas",
+    "codigo": "MAT201",
+    "año": 2024
+}
+
+### Eliminar materia
+DELETE http://localhost:3000/materias/6
+Authorization: Bearer {{token}}

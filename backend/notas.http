@@ -1,0 +1,66 @@
+### Login usuario
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "juan@hola.com",
+    "password": "Asdf1234"
+}
+
+### Set token
+@token = {{login.response.body.token}}
+
+### Crear nueva nota
+POST http://localhost:3000/notas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "alumno_id": 8,
+    "materia_id": 5,
+    "nota1": 8.5,
+    "nota2": 9.0,
+    "nota3": 7.5
+}
+
+### Crear nueva nota
+POST http://localhost:3000/notas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "alumno_id": 9,
+    "materia_id": 7,
+    "nota1": 7.0,
+    "nota2": 6.5,
+    "nota3": 8.0
+}
+
+### Obtener todas las notas
+GET http://localhost:3000/notas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener notas por alumno ID
+GET http://localhost:3000/notas/alumno/8
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Obtener notas por materia ID
+GET http://localhost:3000/notas/materia/5
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Actualizar nota
+PUT http://localhost:3000/notas/3
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "alumno_id": 8,
+    "materia_id": 5,
+    "nota1": 8.5,
+    "nota2": 9.0,
+    "nota3": 7.5
+}

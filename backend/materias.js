@@ -87,7 +87,26 @@ router.put(
     validarId(),
     verificarValidaciones,
     async (req, res) => {
-        
+        const id = Number(req.params.id);
+        const { nombre, codigo, año } = req.body;
+
+        const [rows] = await db.execute("SELECT * FROM materias WHERE id = ?", [
+            id,
+        ]);
+        if (rows.length === 0) {
+            return res
+                .status(404)
+                .json({ success: false, message: "Materia no encontrada" });
+        }
+        await db.execute(
+            "UPDATE materias SET nombre = ?, codigo = ?, año = ? WHERE id = ?",
+            [nombre, codigo, año, id]
+        );
+
+        res.status(200).json({
+            success: true,
+            data: { id, nombre, codigo, año },
+        });
     }
 );
 
@@ -98,7 +117,22 @@ router.delete(
     validarId(),
     verificarValidaciones,
     async (req, res) => {
-        
+        const id = Number(req.params.id);
+
+        const [rows] = await db.execute("SELECT * FROM materias WHERE id = ?", [
+            id,
+        ]);
+        if (rows.length === 0) {
+            return res
+                .status(404)
+                .json({ success: false, message: "Materia no encontrada" });
+        }
+        await db.execute("DELETE FROM materias WHERE id = ?", [id]);
+
+        res.status(200).json({
+            success: true,
+            message: "Materia eliminada correctamente",
+        });
     }
 );
 

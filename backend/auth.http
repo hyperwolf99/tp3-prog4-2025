@@ -1,0 +1,12 @@
+### Login usuario
+# @name login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "juan@hola.com",
+    "password": "Asdf1234"
+}
+
+### Set token
+@token = {{login.response.body.token}}
