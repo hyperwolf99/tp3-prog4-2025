@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useAuth } from "./Auth";
+import { useAuth } from "../contexto/Auth";
 import { Link } from "react-router-dom";
 
 export function Materias() {

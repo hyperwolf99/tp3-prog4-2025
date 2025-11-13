@@ -2,20 +2,20 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@picocss/pico";
 import "./index.css";
-import { Layout } from "./Layout.jsx";
-import { Notas } from "./Notas.jsx";
-import { AuthPage, AuthProvider } from "./Auth.jsx";
+import { Layout } from "./componentes/Layout.jsx";
+import { Notas } from "./paginas/Notas.jsx";
+import { AuthPage, AuthProvider } from "./contexto/Auth.jsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Usuarios } from "./Usuarios.jsx";
-import { DetallesUsuario } from "./DetallesUsuario.jsx";
-import { CrearUsuario } from "./CrearUsuario.jsx";
-import { ModificarUsuario } from "./ModificarUsuario.jsx";
-import { Alumnos } from "./Alumnos.jsx";
-import { CrearAlumno } from "./CrearAlumno.jsx";
-import { ModificarAlumno } from "./ModificarAlumno.jsx";
-import { Materias } from "./Materias.jsx";
-import { CrearMateria } from "./CrearMateria.jsx";
-import { ModificarMateria } from "./ModificarMateria.jsx";
+import { Usuarios } from "./paginas/Usuarios.jsx";
+import { DetallesUsuario } from "./paginas/DetallesUsuario.jsx";
+import { CrearUsuario } from "./paginas/CrearUsuario.jsx";
+import { ModificarUsuario } from "./paginas/ModificarUsuario.jsx";
+import { Alumnos } from "./paginas/Alumnos.jsx";
+import { CrearAlumno } from "./paginas/CrearAlumno.jsx";
+import { ModificarAlumno } from "./paginas/ModificarAlumno.jsx";
+import { Materias } from "./paginas/Materias.jsx";
+import { CrearMateria } from "./paginas/CrearMateria.jsx";
+import { ModificarMateria } from "./paginas/ModificarMateria.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

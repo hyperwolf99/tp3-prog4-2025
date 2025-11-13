@@ -1,35 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "./Auth";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../contexto/Auth";
+import { useNavigate } from "react-router-dom";
 
-export const ModificarMateria = () => {
+export const CrearMateria = () => {
   const { fetchAuth } = useAuth();
-  const { id } = useParams();
   const navigate = useNavigate();
-  const [values, setValues] = useState(null);
+  const [values, setValues] = useState({
+    nombre: "",
+    codigo: "",
+    año: new Date().getFullYear(),
+  });
   const [error, setError] = useState(null);
-
-  const fetchMateria = useCallback(async () => {
-    const response = await fetchAuth(`http://localhost:3000/materias/${id}`);
-    const data = await response.json();
-
-    if (response.ok && data.success) {
-      setValues(data.data);
-    } else {
-      console.error("Error al consultar por materia:", data.message);
-    }
-  }, [fetchAuth, id]);
-
-  useEffect(() => {
-    fetchMateria();
-  }, [fetchMateria]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    const response = await fetchAuth(`http://localhost:3000/materias/${id}`, {
-      method: "PUT",
+    const response = await fetchAuth("http://localhost:3000/materias", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
@@ -37,20 +25,16 @@ export const ModificarMateria = () => {
     const data = await response.json();
 
     if (!response.ok || !data.success) {
-      setError(data.message || "Error al modificar la materia.");
+      setError(data.message || "Error al crear la materia.");
       return;
     }
 
     navigate("/materias");
   };
 
-  if (!values) {
-    return <article aria-busy="true">Cargando datos de la materia...</article>;
-  }
-
   return (
     <article>
-      <h2>Modificar Materia</h2>
+      <h2>Registrar Nueva Materia</h2>
       <form onSubmit={handleSubmit}>
         <fieldset>
           <label>
@@ -73,7 +57,7 @@ export const ModificarMateria = () => {
           </p>
         )}
 
-        <input type="submit" value="Guardar Cambios" />
+        <input type="submit" value="Registrar Materia" />
       </form>
     </article>
   );

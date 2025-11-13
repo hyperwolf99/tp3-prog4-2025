@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "./Auth";
+import { useAuth } from "../contexto/Auth";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const ModificarUsuario = () => {

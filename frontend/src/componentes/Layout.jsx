@@ -1,5 +1,5 @@
 import { Outlet, Link } from "react-router-dom";
-import { useAuth } from "./Auth";
+import { useAuth } from "../contexto/Auth";
 import { Ingresar } from "./Ingresar";
 
 export const Layout = () => {

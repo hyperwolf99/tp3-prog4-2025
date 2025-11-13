@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "./Auth";
+import { useAuth } from "../contexto/Auth";
 import { useNavigate } from "react-router-dom";
 
 export const CrearAlumno = () => {
@@ -39,15 +39,15 @@ export const CrearAlumno = () => {
         <fieldset>
           <label>
             Nombre
-            <input required value={values.nombre} onChange={(e) => setValues({ ...values, nombre: e.target.value })} />
+            <input required type="text" value={values.nombre} onChange={(e) => setValues({ ...values, nombre: e.target.value })} />
           </label>
           <label>
             Apellido
-            <input required value={values.apellido} onChange={(e) => setValues({ ...values, apellido: e.target.value })} />
+            <input required type="text" value={values.apellido} onChange={(e) => setValues({ ...values, apellido: e.target.value })} />
           </label>
           <label>
             DNI
-            <input required value={values.dni} onChange={(e) => setValues({ ...values, dni: e.target.value })} />
+            <input required type="number" value={values.dni} onChange={(e) => setValues({ ...values, dni: e.target.value })} />
           </label>
         </fieldset>
 

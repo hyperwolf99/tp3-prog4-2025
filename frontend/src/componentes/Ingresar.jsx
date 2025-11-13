@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "./Auth";
+import { useAuth } from "../contexto/Auth";
 import { Link } from "react-router-dom";
 
 export const Ingresar = () => {
@@ -12,12 +12,6 @@ export const Ingresar = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     login(email, password);
-    /*
-    const result = await login(email, password);
-    if (result.success) {
-      setOpen(false);
-    }
-    */
   };
 
   return (

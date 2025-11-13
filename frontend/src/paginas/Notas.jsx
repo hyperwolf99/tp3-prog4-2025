@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "./Auth";
+import { useAuth } from "../contexto/Auth";
 
 export function Notas() {
   const { fetchAuth } = useAuth();
