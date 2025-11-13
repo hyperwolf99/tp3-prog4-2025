@@ -14,23 +14,23 @@ export const AuthProvider = ({ children }) => {
   const [username, setUsername] = useState(null);
   const [error, setError] = useState(null);
 
-  const login = async (username, password) => {
+  const login = async (email, password) => {
     setError(null);
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const session = await response.json();
 
-      if (!response.ok && response.status === 400) {
-        throw new Error(session.error);
+      if (!response.ok) {
+        throw new Error(session.message || "Error al iniciar sesión.");
       }
 
       setToken(session.token);
-      setUsername(session.username);
+      setUsername(session.user.nombre); 
       return { success: true };
     } catch (err) {
       setError(err.message);
