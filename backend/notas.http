@@ -64,3 +64,8 @@ Authorization: Bearer {{token}}
     "nota2": 9.0,
     "nota3": 7.5
 }
+
+### Eliminar nota
+DELETE http://localhost:3000/notas/3
+Content-Type: application/json
+Authorization: Bearer {{token}}

@@ -43,13 +43,13 @@ router.post(
 
         const [usuarios] = await db.execute("SELECT * FROM usuarios WHERE email = ?", [email]);
         if (usuarios.length === 0) {
-            return res.status(404).json({ success: false, message: "Usuario o contraseña incorrectos" });
+            return res.status(401).json({ success: false, message: "Usuario o contraseña incorrectos" });
         }
 
         const hashedPassword = usuarios[0]?.password_hash;
         const passwordComparada = await bcrypt.compare(password, hashedPassword);
         if (!passwordComparada) {
-            return res.status(404).json({ success: false, message: "Usuario o contraseña incorrectos" });
+            return res.status(401).json({ success: false, message: "Usuario o contraseña incorrectos" });
         }
 
         const payload = { userId: usuarios[0].id };

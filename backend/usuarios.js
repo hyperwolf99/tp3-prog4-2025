@@ -1,36 +1,34 @@
 import express from "express";
-import { db } from "./db.js";
-import {
-    validarId,
-    verificarValidaciones,
-    validarUsuario
-} from "./validaciones.js";
 import bcrypt from "bcrypt";
+import { db } from "./db.js";
+import { verificarValidaciones } from "./validaciones.js";
 import { verificarAutenticacion } from "./auth.js";
+import { body, param } from "express-validator";
 
 const router = express.Router();
 
-// Obtener todos los usuarios
+// Obtener todos los usuarios o buscar por nombre
 router.get("/", verificarAutenticacion, async (req, res) => {
-    const [rows] = await db.execute("SELECT id, nombre, email FROM usuarios");
+    const { buscar } = req.query;
 
-    if (rows.length === 0) {
-        return res
-            .status(404)
-            .json({ success: false, message: "No hay usuarios" });
+    let query = "SELECT id, nombre, email FROM usuarios";
+    const params = [];
+
+    if (buscar) {
+        query += " WHERE nombre LIKE ?";
+        params.push(`%${buscar}%`);
     }
 
-    res.status(200).json({
-        success: true,
-        data: rows
-    });
+    const [rows] = await db.execute(query, params);
+
+    res.json({ success: true, data: rows });
 });
 
-// Obtener usuario por ID
+// Obtener un usuario por ID
 router.get(
     "/:id",
+    [param("id").isInt().withMessage("El ID debe ser un número entero")],
     verificarAutenticacion,
-    validarId(),
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
@@ -38,6 +36,7 @@ router.get(
             "SELECT id, nombre, email FROM usuarios WHERE id = ?",
             [id]
         );
+
         if (rows.length === 0) {
             return res
                 .status(404)
@@ -50,13 +49,20 @@ router.get(
 // Crear nuevo usuario
 router.post(
     "/",
-    //verificarAutenticacion,
-    validarUsuario(),
+    [
+        body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
+        body("email").isEmail().withMessage("Debe ser un email válido"),
+        body("password")
+            .isLength({ min: 6 })
+            .withMessage("La contraseña debe tener al menos 6 caracteres"),
+    ],
     verificarValidaciones,
     async (req, res) => {
         const { nombre, email, password } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Hashear la contraseña antes de guardarla
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
         const [result] = await db.execute(
             "INSERT INTO usuarios (nombre, email, password_hash) VALUES (?, ?, ?)",
@@ -65,11 +71,7 @@ router.post(
 
         res.status(201).json({
             success: true,
-            data: {
-                id: result.insertId,
-                nombre,
-                email
-            },
+            data: { id: result.insertId, nombre, email },
         });
     }
 );
@@ -77,58 +79,36 @@ router.post(
 // Actualizar usuario
 router.put(
     "/:id",
+    [
+        param("id").isInt().withMessage("El ID debe ser un número entero"),
+        body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
+        body("email").isEmail().withMessage("Debe ser un email válido"),
+    ],
     verificarAutenticacion,
-    validarId(),
-    validarUsuario(),
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
-        const { nombre, email, password } = req.body;
-
-        const [rows] = await db.execute("SELECT * FROM usuarios WHERE id = ?", [
-            id,
-        ]);
-        if (rows.length === 0) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Usuario no encontrado" });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const { nombre, email } = req.body;
 
         await db.execute(
-            "UPDATE usuarios SET nombre = ?, email = ?, password_hash = ? WHERE id = ?",
-            [nombre, email, hashedPassword, id]
+            "UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?",
+            [nombre, email, id]
         );
 
-        res.status(200).json({
-            success: true,
-            data: { id, nombre, email },
-        });
+        res.status(200).json({ success: true, data: { id, nombre, email } });
     }
 );
 
 // Eliminar usuario
 router.delete(
     "/:id",
+    [param("id").isInt().withMessage("El ID debe ser un número entero")],
     verificarAutenticacion,
-    validarId(),
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
-
-        const [rows] = await db.execute("SELECT * FROM usuarios WHERE id = ?", [
-            id,
-        ]);
-        if (rows.length === 0) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Usuario no encontrado" });
-        }
-
         await db.execute("DELETE FROM usuarios WHERE id = ?", [id]);
-
-        res.status(200).json({ success: true, message: "Usuario eliminado" });
+        res.status(200).json({ success: true, data: { id } });
     }
 );
 

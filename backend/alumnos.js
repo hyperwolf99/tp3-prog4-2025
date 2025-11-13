@@ -1,39 +1,43 @@
 import express from "express";
 import { db } from "./db.js";
-import {
-    validarId,
-    verificarValidaciones
-} from "./validaciones.js";
+import { verificarValidaciones } from "./validaciones.js";
 import { verificarAutenticacion } from "./auth.js";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 const router = express.Router();
 
-// Obtener todos los alumnos
+// Obtener todos los alumnos o buscar por nombre, apellido o DNI
 router.get("/", verificarAutenticacion, async (req, res) => {
-    const [rows] = await db.execute("SELECT * FROM alumnos");
+    const { buscar } = req.query;
 
-    if (rows.length === 0) {
-        return res
-            .status(404)
-            .json({ success: false, message: "No hay alumnos" });
+    let query = "SELECT * FROM alumnos";
+    const params = [];
+
+    if (buscar) {
+        query += " WHERE nombre LIKE ? OR apellido LIKE ? OR dni LIKE ?";
+        params.push(`%${buscar}%`, `%${buscar}%`, `%${buscar}%`);
     }
 
-    res.status(200).json({
-        success: true,
-        data: rows
-    });
+    const [rows] = await db.execute(query, params);
+
+    if (rows.length === 0) {
+        // Devolvemos un array vacío con éxito si la búsqueda no da resultados
+        return res.json({ success: true, data: [] });
+    }
+
+    res.json({ success: true, data: rows });
 });
 
-// Obtener alumno por ID
+// Obtener un alumno por ID
 router.get(
     "/:id",
+    [param("id").isInt().withMessage("El ID debe ser un número entero")],
     verificarAutenticacion,
-    validarId(),
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
 
+        // Comprobamos que el alumno exista
         const [rows] = await db.execute("SELECT * FROM alumnos WHERE id = ?", [
             id,
         ]);
@@ -43,11 +47,7 @@ router.get(
                 .status(404)
                 .json({ success: false, message: "Alumno no encontrado" });
         }
-
-        res.json({
-            success: true,
-            data: rows[0],
-        })
+        res.json({ success: true, data: rows[0] });
     }
 );
 
@@ -55,8 +55,8 @@ router.get(
 router.post(
     "/",
     [
-        body("nombre").isString().notEmpty().withMessage("El nombre es obligatorio"),
-        body("apellido").isString().notEmpty().withMessage("El apellido es obligatorio"),
+        body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
+        body("apellido").notEmpty().withMessage("El apellido es obligatorio"),
         body("dni").notEmpty().withMessage("El DNI es obligatorio"),
     ],
     verificarAutenticacion,
@@ -71,12 +71,7 @@ router.post(
 
         res.status(201).json({
             success: true,
-            data: {
-                id: result.insertId,
-                nombre,
-                apellido,
-                dni
-            },
+            data: { id: result.insertId, nombre, apellido, dni },
         });
     }
 );
@@ -84,21 +79,17 @@ router.post(
 // Actualizar alumno
 router.put(
     "/:id",
+    [
+        param("id").isInt().withMessage("El ID debe ser un número entero"),
+        body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
+        body("apellido").notEmpty().withMessage("El apellido es obligatorio"),
+        body("dni").notEmpty().withMessage("El DNI es obligatorio"),
+    ],
     verificarAutenticacion,
-    validarId(),
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
         const { nombre, apellido, dni } = req.body;
-
-        const [rows] = await db.execute("SELECT * FROM alumnos WHERE id = ?", [
-            id,
-        ]);
-        if (rows.length === 0) {
-            return res
-                .status(404)
-                .json({ success: false, message: "Alumno no encontrado" });
-        }
 
         await db.execute(
             "UPDATE alumnos SET nombre = ?, apellido = ?, dni = ? WHERE id = ?",
@@ -115,15 +106,17 @@ router.put(
 // Eliminar alumno
 router.delete(
     "/:id",
+    [param("id").isInt().withMessage("El ID debe ser un número entero")],
     verificarAutenticacion,
-    validarId(),
     verificarValidaciones,
     async (req, res) => {
         const id = Number(req.params.id);
 
+        // Comprobamos que el alumno exista
         const [rows] = await db.execute("SELECT * FROM alumnos WHERE id = ?", [
             id,
         ]);
+
         if (rows.length === 0) {
             return res
                 .status(404)
@@ -131,8 +124,7 @@ router.delete(
         }
 
         await db.execute("DELETE FROM alumnos WHERE id = ?", [id]);
-
-        res.status(200).json({ success: true, message: "Alumno eliminado" });
+        res.json({ success: true, data: { id } });
     }
 );
 

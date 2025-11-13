@@ -1,13 +1,13 @@
 import express from "express";
 import { db } from "./db.js";
-import { validarId, verificarValidaciones } from "./validaciones.js";
+import { verificarValidaciones } from "./validaciones.js";
 import { verificarAutenticacion } from "./auth.js";
 import { body, param } from "express-validator";
 
 const router = express.Router();
 
 // Obtener todas las notas
-router.get("/", async (req, res) => {
+router.get("/", verificarAutenticacion, async (req, res) => {
     const [rows] = await db.execute(`
     SELECT 
       n.id, n.nota1, n.nota2, n.nota3,
@@ -142,6 +142,25 @@ router.put(
             success: true,
             data: { id, alumno_id, materia_id, nota1, nota2, nota3 },
         });
+    }
+);
+
+// Eliminar nota
+router.delete(
+    "/:id",
+    [param("id").isInt().withMessage("El ID de la nota debe ser un número entero")],
+    verificarAutenticacion, verificarValidaciones, async (req, res) => {
+        const id = Number(req.params.id);
+
+        const [rows] = await db.execute("SELECT * FROM notas WHERE id = ?", [id]);
+        if (rows.length === 0) {
+            return res
+                .status(404)
+                .json({ success: false, message: "Nota no encontrada" });
+        }
+        await db.execute("DELETE FROM notas WHERE id = ?", [id]);
+
+        res.status(200).json({ success: true, data: { id } });
     }
 );
 

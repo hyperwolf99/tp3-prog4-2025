@@ -19,7 +19,7 @@ router.get("/", verificarAutenticacion, async (req, res) => {
             .json({ success: false, message: "No hay materias" });
     }
 
-    res.status(200).json({
+    res.json({
         success: true,
         data: rows
     })
@@ -129,7 +129,7 @@ router.delete(
         }
         await db.execute("DELETE FROM materias WHERE id = ?", [id]);
 
-        res.status(200).json({
+        res.json({
             success: true,
             message: "Materia eliminada correctamente",
         });
